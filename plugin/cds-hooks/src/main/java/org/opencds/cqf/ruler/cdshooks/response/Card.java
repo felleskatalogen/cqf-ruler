@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 public class Card {
     private static final Logger logger = LoggerFactory.getLogger(Card.class);
@@ -92,6 +93,8 @@ public class Card {
      * @see Card.Link
      */
     private List<Card.Link> links;
+
+    private Map<String, Object> extension;
 
     // Getters and Setters
 
@@ -285,6 +288,14 @@ public class Card {
     @JsonSetter
     public void setLinks(List<Link> links) {
         this.links = links;
+    }
+
+    public Map<String, Object> getExtension() {
+        return extension;
+    }
+
+    public void setExtension(Map<String, Object> extension) {
+        this.extension = extension;
     }
 
     public static class Source {

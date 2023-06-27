@@ -3,7 +3,9 @@ package org.opencds.cqf.ruler.cdshooks.r4;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -45,6 +47,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -394,6 +398,18 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 								}
 							} else if (dv.getPath().endsWith("extension")) {
 								card.setIndicator(dynamicValueResult.toString());
+							} else if (dv.getPath().startsWith("extension")) {
+								card.setExtension(new HashMap<>());
+								String key = dv.getPath().substring("extension.".length());
+								String json = dynamicValueResult.toString();
+								ObjectMapper mapper = new ObjectMapper();
+								Map<String, Object> map;
+								try {
+									map = mapper.readValue(json, Map.class);
+									card.getExtension().put(key, map);
+								} catch (JsonProcessingException e) {
+									throw new ErrorHandling.CdsHooksError("Error processing JSON " + json);
+								}
 							} else if (card.getSuggestions() != null
 									&& card.getSuggestions().get(0).getActions() != null
 									&& card.getSuggestions().get((0)).getActions().get(0).getResource() != null) {
